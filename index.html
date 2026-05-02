@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>職問 · 求職問答平台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e; --ink2: #3d3d5c; --muted: #8888aa;
+    --accent: #e8622a; --accent2: #f4a261;
+    --bg: #f8f7f3; --surface: #ffffff; --border: #e8e6df;
+    --tag-bg: #f0ede6; --best: #1a7a4a; --best-bg: #e8f5ee;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans TC',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; line-height:1.6; }
+
+  nav {
+    background:var(--surface); border-bottom:1px solid var(--border);
+    padding:0 2rem; display:flex; align-items:center; justify-content:space-between;
+    height:60px; position:sticky; top:0; z-index:100;
+  }
+  .logo { font-family:'DM Serif Display',serif; font-size:1.5rem; color:var(--ink); text-decoration:none; display:flex; align-items:center; gap:0.4rem; cursor:pointer; }
+  .logo span { color:var(--accent); }
+  .logo-sub { font-family:'Noto Sans TC',sans-serif; font-size:0.65rem; font-weight:500; color:var(--muted); letter-spacing:0.08em; margin-top:2px; }
+  .nav-right { display:flex; align-items:center; gap:1rem; }
+  .btn { padding:0.45rem 1.1rem; border-radius:6px; font-size:0.85rem; font-weight:500; cursor:pointer; border:none; font-family:'Noto Sans TC',sans-serif; transition:all 0.15s; }
+  .btn-ghost { background:transparent; color:var(--ink2); border:1px solid var(--border); }
+  .btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+  .btn-primary { background:var(--accent); color:white; }
+  .btn-primary:hover { background:#d4541e; }
+
+  .wrapper { max-width:1100px; margin:0 auto; padding:2rem 1.5rem; display:grid; grid-template-columns:1fr 280px; gap:2rem; }
+
+  .hero { background:var(--ink); color:white; padding:2.5rem 3rem; border-radius:16px; margin-bottom:2rem; position:relative; overflow:hidden; }
+  .hero::before { content:''; position:absolute; right:-60px; top:-60px; width:260px; height:260px; border-radius:50%; background:var(--accent); opacity:0.12; }
+  .hero h1 { font-size:1.7rem; font-weight:700; line-height:1.4; margin-bottom:0.5rem; }
+  .hero h1 em { color:var(--accent2); font-style:normal; }
+  .hero p { color:#aaa; font-size:0.9rem; margin-bottom:1.5rem; }
+  .hero-actions { display:flex; gap:0.75rem; flex-wrap:wrap; }
+  .btn-hero { padding:0.6rem 1.4rem; border-radius:8px; font-size:0.9rem; font-weight:500; cursor:pointer; border:none; font-family:'Noto Sans TC',sans-serif; transition:all 0.15s; }
+  .btn-hero-primary { background:var(--accent); color:white; }
+  .btn-hero-ghost { background:rgba(255,255,255,0.1); color:white; border:1px solid rgba(255,255,255,0.2); }
+
+  .filter-bar { display:flex; gap:0.5rem; margin-bottom:1.25rem; flex-wrap:wrap; align-items:center; }
+  .filter-label { font-size:0.8rem; color:var(--muted); margin-right:0.25rem; }
+  .tag { padding:0.3rem 0.75rem; border-radius:100px; font-size:0.78rem; font-weight:500; cursor:pointer; transition:all 0.15s; border:1px solid transparent; background:var(--tag-bg); color:var(--ink2); }
+  .tag:hover { border-color:var(--accent); color:var(--accent); }
+  .tag.active { background:var(--accent); color:white; }
+
+  .sort-bar { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; font-size:0.82rem; }
+  .sort-bar span { color:var(--muted); }
+  .sort-options { display:flex; gap:0.5rem; }
+  .sort-btn { padding:0.25rem 0.6rem; border-radius:4px; font-size:0.78rem; cursor:pointer; border:none; background:transparent; color:var(--muted); font-family:'Noto Sans TC',sans-serif; transition:all 0.12s; }
+  .sort-btn.active { background:var(--tag-bg); color:var(--ink); font-weight:500; }
+
+  .q-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.2rem 1.4rem; cursor:pointer; transition:all 0.15s; margin-bottom:0.5rem; }
+  .q-card:hover { border-color:#d0c8be; box-shadow:0 4px 16px rgba(0,0,0,0.06); transform:translateY(-1px); }
+  .q-card.answered { border-left:3px solid #4caf82; }
+  .q-card.unanswered { border-left:3px solid #f0c040; }
+  .q-meta { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.6rem; flex-wrap:wrap; }
+  .q-industry { font-size:0.7rem; font-weight:600; padding:0.15rem 0.5rem; border-radius:4px; background:var(--ink); color:white; }
+  .q-role { font-size:0.7rem; font-weight:500; padding:0.15rem 0.5rem; border-radius:4px; background:var(--tag-bg); color:var(--ink2); }
+  .q-time { font-size:0.72rem; color:var(--muted); margin-left:auto; }
+  .q-title { font-size:1rem; font-weight:600; color:var(--ink); margin-bottom:0.4rem; line-height:1.45; }
+  .q-preview { font-size:0.82rem; color:var(--muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .q-footer { display:flex; align-items:center; gap:1rem; margin-top:0.8rem; font-size:0.78rem; color:var(--muted); }
+  .answer-count { margin-left:auto; font-size:0.75rem; font-weight:600; padding:0.2rem 0.6rem; border-radius:4px; }
+  .has-answers { background:var(--best-bg); color:var(--best); }
+  .no-answers { background:#fff3e0; color:#e65100; }
+
+  /* Loading */
+  .loading { text-align:center; padding:3rem; color:var(--muted); }
+  .spinner { width:32px; height:32px; border:3px solid var(--border); border-top-color:var(--accent); border-radius:50%; animation:spin 0.8s linear infinite; margin:0 auto 1rem; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* Config banner */
+  .config-banner {
+    background:#fff3cd; border:1px solid #ffc107; border-radius:10px;
+    padding:1rem 1.4rem; margin-bottom:1.5rem; font-size:0.85rem;
+  }
+  .config-banner strong { color:#856404; }
+  .config-banner code { background:#ffeaa0; padding:0.1rem 0.4rem; border-radius:3px; font-family:monospace; font-size:0.8rem; }
+  .config-banner input { width:100%; margin-top:0.5rem; padding:0.5rem 0.8rem; border:1px solid #ffc107; border-radius:6px; font-size:0.85rem; font-family:'Noto Sans TC',sans-serif; }
+  .config-banner button { margin-top:0.5rem; padding:0.4rem 1rem; background:#e8622a; color:white; border:none; border-radius:6px; cursor:pointer; font-size:0.82rem; }
+
+  /* Sidebar */
+  .sidebar { display:flex; flex-direction:column; gap:1.25rem; }
+  .side-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.2rem; }
+  .side-card h3 { font-size:0.82rem; font-weight:700; letter-spacing:0.06em; color:var(--muted); text-transform:uppercase; margin-bottom:0.9rem; }
+  .industry-item { display:flex; align-items:center; justify-content:space-between; padding:0.45rem 0.5rem; border-radius:6px; cursor:pointer; font-size:0.84rem; transition:background 0.12s; }
+  .industry-item:hover { background:var(--tag-bg); }
+  .industry-count { font-size:0.72rem; color:var(--muted); background:var(--tag-bg); padding:0.1rem 0.4rem; border-radius:3px; }
+  .post-btn { display:block; width:100%; padding:0.75rem; background:var(--accent); color:white; border:none; border-radius:8px; font-size:0.9rem; font-weight:600; cursor:pointer; font-family:'Noto Sans TC',sans-serif; transition:all 0.15s; text-align:center; }
+  .post-btn:hover { background:#d4541e; }
+  .post-btn-2 { display:block; width:100%; padding:0.65rem; background:transparent; color:var(--ink2); border:1px solid var(--border); border-radius:8px; font-size:0.85rem; font-weight:500; cursor:pointer; font-family:'Noto Sans TC',sans-serif; transition:all 0.15s; text-align:center; margin-top:0.5rem; }
+  .post-btn-2:hover { border-color:var(--accent); color:var(--accent); }
+
+  /* Detail */
+  .detail-view { display:none; position:fixed; inset:0; background:var(--bg); z-index:150; overflow-y:auto; }
+  .detail-view.open { display:block; }
+  .detail-nav { background:var(--surface); border-bottom:1px solid var(--border); padding:0 2rem; height:56px; display:flex; align-items:center; gap:1rem; position:sticky; top:0; z-index:10; }
+  .back-btn { background:none; border:none; cursor:pointer; font-size:0.85rem; color:var(--muted); display:flex; align-items:center; gap:0.4rem; font-family:'Noto Sans TC',sans-serif; padding:0; transition:color 0.12s; }
+  .back-btn:hover { color:var(--ink); }
+  .detail-content { max-width:860px; margin:0 auto; padding:2rem 1.5rem; }
+  .detail-q { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.8rem; margin-bottom:1.5rem; }
+  .detail-q h1 { font-size:1.35rem; font-weight:700; margin-bottom:0.75rem; line-height:1.4; }
+  .detail-q p { font-size:0.9rem; color:var(--ink2); line-height:1.7; }
+  .answers-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; }
+  .answers-header h2 { font-size:1rem; font-weight:700; }
+  .answer-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:1.2rem 1.4rem; margin-bottom:0.75rem; }
+  .answer-card.best-answer { border-color:var(--best); box-shadow:0 0 0 1px var(--best); }
+  .best-badge { display:inline-flex; align-items:center; gap:0.3rem; background:var(--best); color:white; font-size:0.72rem; font-weight:700; padding:0.2rem 0.6rem; border-radius:4px; margin-bottom:0.75rem; }
+  .answer-author { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.75rem; }
+  .avatar { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:0.85rem; font-weight:700; flex-shrink:0; }
+  .author-info .name { font-size:0.88rem; font-weight:600; }
+  .author-info .title { font-size:0.75rem; color:var(--muted); }
+  .yt-embed { background:#111; border-radius:8px; aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; overflow:hidden; margin-bottom:0.75rem; }
+  .yt-embed img { width:100%; height:100%; object-fit:cover; opacity:0.75; }
+  .yt-play { position:absolute; width:56px; height:56px; background:rgba(255,0,0,0.9); border-radius:50%; display:flex; align-items:center; justify-content:center; transition:transform 0.15s; }
+  .yt-embed:hover .yt-play { transform:scale(1.1); }
+  .yt-play svg { width:22px; height:22px; fill:white; margin-left:4px; }
+  .answer-stats { display:flex; align-items:center; gap:1.2rem; font-size:0.78rem; color:var(--muted); }
+  .post-answer-box { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:1.4rem; margin-top:1.5rem; }
+  .post-answer-box h3 { font-size:0.95rem; font-weight:700; margin-bottom:0.9rem; }
+  .yt-input-row { display:flex; gap:0.6rem; }
+  .yt-input-row input { flex:1; padding:0.65rem 0.9rem; border:1px solid var(--border); border-radius:7px; font-size:0.9rem; font-family:'Noto Sans TC',sans-serif; }
+  .yt-input-row input:focus { outline:none; border-color:var(--accent); }
+
+  /* Modal */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; backdrop-filter:blur(2px); align-items:center; justify-content:center; padding:1rem; }
+  .modal-overlay.open { display:flex; }
+  .modal { background:var(--surface); border-radius:14px; width:100%; max-width:700px; max-height:90vh; overflow-y:auto; animation:slideUp 0.2s ease; }
+  @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  .modal-header { padding:1.4rem 1.6rem 1rem; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; }
+  .modal-header h2 { font-size:1.1rem; font-weight:700; }
+  .modal-close { background:none; border:none; font-size:1.4rem; cursor:pointer; color:var(--muted); }
+  .modal-body { padding:1.4rem 1.6rem; }
+  .form-group { margin-bottom:1.1rem; }
+  .form-group label { display:block; font-size:0.82rem; font-weight:600; color:var(--ink2); margin-bottom:0.4rem; }
+  .form-group input, .form-group textarea, .form-group select { width:100%; padding:0.65rem 0.9rem; border:1px solid var(--border); border-radius:7px; font-size:0.9rem; font-family:'Noto Sans TC',sans-serif; color:var(--ink); background:var(--surface); transition:border-color 0.15s; }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline:none; border-color:var(--accent); }
+  .form-group textarea { resize:vertical; min-height:100px; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+  .form-hint { font-size:0.75rem; color:var(--muted); margin-top:0.3rem; }
+  .modal-footer { padding:1rem 1.6rem 1.4rem; display:flex; justify-content:flex-end; gap:0.75rem; }
+
+  /* Toast */
+  .toast { position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(100px); background:var(--ink); color:white; padding:0.75rem 1.5rem; border-radius:8px; font-size:0.85rem; font-weight:500; z-index:999; transition:transform 0.3s ease; white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  @media(max-width:768px){ .wrapper{grid-template-columns:1fr} .sidebar{display:none} .hero{padding:1.5rem} .form-row{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo" onclick="showList()">
+    <div>職<span>問</span><div class="logo-sub">CAREER Q&A</div></div>
+  </div>
+  <div class="nav-right">
+    <button class="btn btn-ghost" onclick="openModal('ask-modal')">我有問題</button>
+    <button class="btn btn-primary" onclick="openModal('answer-modal')">我來回答</button>
+  </div>
+</nav>
+
+<!-- LIST VIEW -->
+<div id="list-view">
+  <div class="wrapper">
+    <main>
+      <div class="hero">
+        <h1>職場問題，<em>找真人解答</em></h1>
+        <p>新鮮人問，過來人用影片回答。找到你求職路上的第一手資訊。</p>
+        <div class="hero-actions">
+          <button class="btn-hero btn-hero-primary" onclick="openModal('ask-modal')">🙋 我有問題想問</button>
+          <button class="btn-hero btn-hero-ghost" style="border:1px solid rgba(255,255,255,0.2)" onclick="openModal('answer-modal')">🎥 我想用影片回答</button>
+        </div>
+      </div>
+
+      <!-- Config banner (隱藏後消失) -->
+      <div class="config-banner" id="config-banner">
+        <strong>⚙️ 設定 Google Sheet API 網址</strong><br>
+        完成 Apps Script 部署後，把網址貼到這裡，網站就會讀取真實資料。
+        <input type="url" id="api-url-input" placeholder="https://script.google.com/macros/s/xxx/exec">
+        <button onclick="saveApiUrl()">儲存並連線</button>
+      </div>
+
+      <div class="filter-bar">
+        <span class="filter-label">職位：</span>
+        <span class="tag active" onclick="filterTag(this,'all')">全部</span>
+        <span class="tag" onclick="filterTag(this,'RD 工程師')">RD 工程師</span>
+        <span class="tag" onclick="filterTag(this,'PM')">PM 產品</span>
+        <span class="tag" onclick="filterTag(this,'人資')">人資</span>
+        <span class="tag" onclick="filterTag(this,'業務')">業務</span>
+        <span class="tag" onclick="filterTag(this,'行政')">行政</span>
+        <span class="tag" onclick="filterTag(this,'獵頭')">獵頭</span>
+      </div>
+
+      <div class="sort-bar">
+        <span id="q-count">載入中...</span>
+        <div class="sort-options">
+          <button class="sort-btn active" onclick="sortBy(this,'new')">最新</button>
+          <button class="sort-btn" onclick="sortBy(this,'hot')">最熱門</button>
+          <button class="sort-btn" onclick="sortBy(this,'unanswered')">待解答</button>
+        </div>
+      </div>
+
+      <div id="q-list">
+        <div class="loading"><div class="spinner"></div>載入問題中...</div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <div class="side-card">
+        <button class="post-btn" onclick="openModal('ask-modal')">✏️ 發問</button>
+        <button class="post-btn-2" onclick="openModal('answer-modal')">🎥 上傳影片回答</button>
+      </div>
+      <div class="side-card">
+        <h3>產業分類</h3>
+        <div>
+          <div class="industry-item"><span>⚡ 電子製造業</span><span class="industry-count" id="cnt-elec">—</span></div>
+          <div class="industry-item"><span>💻 軟體業</span><span class="industry-count" id="cnt-sw">—</span></div>
+          <div class="industry-item"><span>🏦 金融業</span><span class="industry-count" id="cnt-fin">—</span></div>
+        </div>
+      </div>
+      <div class="side-card" style="background:var(--ink);color:white;border-color:var(--ink)">
+        <h3 style="color:#888">你也能回答</h3>
+        <p style="font-size:0.82rem;color:#bbb;line-height:1.6">錄一支 YouTube 影片分享你的職場經驗，幫助正在迷茫的新鮮人。</p>
+        <div style="margin-top:0.75rem;font-size:0.75rem;color:#777">🎥 上傳到 YouTube → 貼連結到這裡</div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- DETAIL VIEW -->
+<div class="detail-view" id="detail-view">
+  <div class="detail-nav">
+    <button class="back-btn" onclick="showList()">← 返回列表</button>
+    <span style="font-size:0.82rem;color:var(--muted)" id="detail-breadcrumb"></span>
+  </div>
+  <div class="detail-content" id="detail-content">
+    <div class="loading"><div class="spinner"></div>載入中...</div>
+  </div>
+</div>
+
+<!-- ASK MODAL -->
+<div class="modal-overlay" id="ask-modal" onclick="closeModalOutside(event,'ask-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>✏️ 發問</h2>
+      <button class="modal-close" onclick="closeModal('ask-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>產業</label>
+          <select id="ask-industry">
+            <option>電子製造業</option><option>軟體業</option><option>金融業</option><option>傳產製造</option><option>零售電商</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>職位類別</label>
+          <select id="ask-role">
+            <option>RD 工程師</option><option>PM</option><option>人資</option><option>業務</option><option>行政</option><option>獵頭</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>問題標題</label>
+        <input type="text" id="ask-title" placeholder="例如：電子業 RD 工程師的工作內容是什麼？">
+      </div>
+      <div class="form-group">
+        <label>詳細說明（選填）</label>
+        <textarea id="ask-body" placeholder="可以補充你的背景、想了解的方向..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>暱稱</label>
+        <input type="text" id="ask-nickname" placeholder="例如：迷茫大學生">
+        <div class="form-hint">不需要真實姓名</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('ask-modal')">取消</button>
+      <button class="btn btn-primary" onclick="submitQuestion()">發布問題</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANSWER MODAL -->
+<div class="modal-overlay" id="answer-modal" onclick="closeModalOutside(event,'answer-modal')">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>🎥 上傳影片回答</h2>
+      <button class="modal-close" onclick="closeModal('answer-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>選擇要回答的問題</label>
+        <select id="answer-qid"></select>
+      </div>
+      <div class="form-group">
+        <label>YouTube 影片連結</label>
+        <input type="url" id="answer-url" placeholder="https://www.youtube.com/watch?v=...">
+        <div class="form-hint">請先上傳到 YouTube，再把連結貼到這裡</div>
+      </div>
+      <div class="form-group">
+        <label>你的名稱</label>
+        <input type="text" id="answer-name" placeholder="例如：10年電子業老鳥">
+      </div>
+      <div class="form-group">
+        <label>職位／頭銜</label>
+        <input type="text" id="answer-title-input" placeholder="例如：資深硬體工程師 @ 某科技公司">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('answer-modal')">取消</button>
+      <button class="btn btn-primary" onclick="submitAnswer()">提交影片</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════
+//  設定區
+// ══════════════════════════════════════════
+
+// 從 localStorage 讀取 API URL，或使用預設值（空字串 = 使用假資料）
+let API_URL = localStorage.getItem('zhiwen_api_url') || '';
+
+// 假資料（API 未設定時使用）
+const MOCK_QUESTIONS = [
+  { id:1001, industry:'電子製造業', role:'RD 工程師', title:'電子業 RD 工程師每天都在做什麼？跟我想的差很多嗎？', body:'我是電機系大四學生，即將要畢業了，一直很好奇 RD 的日常到底長什麼樣子。學校都在寫 code 和跑模擬，但聽說實際工作完全不一樣...', nickname:'迷茫大學生', status:'published', view_count:1240, answer_count:3, created_at: new Date(Date.now()-7200000).toISOString() },
+  { id:1002, industry:'電子製造業', role:'PM', title:'應屆畢業生進電子業 PM 需要具備什麼條件？非本科系有機會嗎？', body:'我是商管系畢業，很想往 PM 方向走，但很擔心沒有理工背景會被直接刷掉...', nickname:'轉職中', status:'published', view_count:892, answer_count:1, created_at: new Date(Date.now()-18000000).toISOString() },
+  { id:1003, industry:'電子製造業', role:'人資', title:'人資在電子業的日常工作是什麼？跟一般服務業的 HR 差很多嗎？', body:'人資科系剛畢業，想比較看看電子業跟其他產業 HR 的差異...', nickname:'HR新手', status:'published', view_count:456, answer_count:0, created_at: new Date(Date.now()-86400000).toISOString() },
+  { id:1004, industry:'電子製造業', role:'業務', title:'電子業業務跟一般 B2C 業務差在哪裡？薪資結構怎麼算？', body:'想了解電子業 B2B 業務的薪資結構，有沒有底薪＋獎金的模式...', nickname:'要轉職的業務', status:'published', view_count:723, answer_count:2, created_at: new Date(Date.now()-172800000).toISOString() },
+  { id:1005, industry:'電子製造業', role:'獵頭', title:'獵頭是怎麼找人才的？他們拿的佣金是誰付的？', body:'最近收到獵頭的 LinkedIn 訊息，好奇他們整個運作模式是什麼...', nickname:'被獵頭聯絡的工程師', status:'published', view_count:1890, answer_count:2, created_at: new Date(Date.now()-259200000).toISOString() },
+  { id:1006, industry:'電子製造業', role:'行政', title:'電子科技公司的行政工作跟傳產有什麼不同？需要英文嗎？', body:'想進科技公司做行政，不確定英文程度要到哪裡...', nickname:'行政新鮮人', status:'published', view_count:334, answer_count:0, created_at: new Date(Date.now()-345600000).toISOString() },
+];
+
+const MOCK_ANSWERS = {
+  1001: [
+    { id:2001, question_id:1001, answerer_name:'資深RD阿明', answerer_title:'硬體設計工程師 · 8年電子業', youtube_url:'https://www.youtube.com/watch?v=dQw4w9WgXcQ', youtube_video_id:'dQw4w9WgXcQ', is_best:true, yt_view_count:8420, created_at: new Date(Date.now()-86400000).toISOString() },
+    { id:2002, question_id:1001, answerer_name:'軟體小白白', answerer_title:'Firmware 工程師 · 3年', youtube_url:'https://www.youtube.com/watch?v=ysz5S6PUM-U', youtube_video_id:'ysz5S6PUM-U', is_best:false, yt_view_count:3210, created_at: new Date(Date.now()-172800000).toISOString() },
+  ],
+  1002: [
+    { id:2003, question_id:1002, answerer_name:'Carol · PM主管', answerer_title:'Product Manager · 6年', youtube_url:'https://www.youtube.com/watch?v=M7lc1UVf-VE', youtube_video_id:'M7lc1UVf-VE', is_best:true, yt_view_count:5630, created_at: new Date(Date.now()-14400000).toISOString() },
+  ],
+  1005: [
+    { id:2004, question_id:1005, answerer_name:'Jenny · 科技獵頭', answerer_title:'獵頭顧問 · 5年', youtube_url:'https://www.youtube.com/watch?v=3JZ_D3ELwOQ', youtube_video_id:'3JZ_D3ELwOQ', is_best:true, yt_view_count:12400, created_at: new Date(Date.now()-172800000).toISOString() },
+  ],
+};
+
+// ══════════════════════════════════════════
+//  狀態
+// ══════════════════════════════════════════
+let allQuestions = [];
+let currentFilter = 'all';
+let currentSort = 'new';
+
+// ══════════════════════════════════════════
+//  API 呼叫（JSONP 方式，支援 file:// 開啟）
+//  Apps Script GET 請求全部走這裡，不用 fetch
+// ══════════════════════════════════════════
+
+function jsonp(params) {
+  return new Promise((resolve, reject) => {
+    const cbName = 'cb_' + Date.now();
+    const url = new URL(API_URL);
+    Object.entries(params).forEach(([k,v]) => url.searchParams.set(k, v));
+    url.searchParams.set('callback', cbName);
+
+    window[cbName] = (data) => {
+      delete window[cbName];
+      document.head.removeChild(script);
+      resolve(data);
+    };
+
+    const script = document.createElement('script');
+    script.src = url.toString();
+    script.onerror = () => { delete window[cbName]; reject(new Error('JSONP 失敗')); };
+    document.head.appendChild(script);
+
+    setTimeout(() => { if (window[cbName]) { delete window[cbName]; reject(new Error('Timeout')); } }, 10000);
+  });
+}
+
+async function apiGet(params) {
+  if (!API_URL) return null;
+  return jsonp(params);
+}
+
+// POST 也改成用 GET + JSONP（把資料 JSON encode 後放在 query string）
+async function apiPost(body) {
+  if (!API_URL) return { success:true, mock:true };
+  return jsonp({ ...body, _method: 'POST' });
+}
+
+// ══════════════════════════════════════════
+//  載入問題列表
+// ══════════════════════════════════════════
+
+async function loadQuestions() {
+  document.getElementById('q-list').innerHTML = '<div class="loading"><div class="spinner"></div>載入問題中...</div>';
+
+  let questions;
+  if (API_URL) {
+    try {
+      const data = await apiGet({ action:'getQuestions', role: currentFilter === 'all' ? '' : currentFilter, sort: currentSort });
+      questions = data.questions || [];
+    } catch(e) {
+      console.warn('API 失敗，使用假資料', e);
+      questions = MOCK_QUESTIONS;
+    }
+  } else {
+    questions = MOCK_QUESTIONS;
+  }
+
+  // 前端篩選（假資料模式）
+  if (!API_URL) {
+    if (currentFilter !== 'all') questions = questions.filter(q => q.role === currentFilter);
+    if (currentSort === 'hot') questions = [...questions].sort((a,b) => b.view_count - a.view_count);
+    else if (currentSort === 'unanswered') questions = questions.filter(q => q.answer_count == 0);
+    else questions = [...questions].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  }
+
+  allQuestions = questions;
+
+  // 更新產業計數
+  const elec = MOCK_QUESTIONS.filter(q=>q.industry==='電子製造業').length;
+  document.getElementById('cnt-elec').textContent = elec;
+  document.getElementById('cnt-sw').textContent = '0';
+  document.getElementById('cnt-fin').textContent = '0';
+
+  renderList(questions);
+
+  // 填充回答 modal 的問題選單
+  const sel = document.getElementById('answer-qid');
+  sel.innerHTML = allQuestions.map(q => `<option value="${q.id}">${q.title.substring(0,40)}...</option>`).join('');
+}
+
+function renderList(questions) {
+  document.getElementById('q-count').textContent = `顯示 ${questions.length} 個問題`;
+
+  if (questions.length === 0) {
+    document.getElementById('q-list').innerHTML = '<div class="loading">這個分類目前還沒有問題 🙂</div>';
+    return;
+  }
+
+  document.getElementById('q-list').innerHTML = questions.map(q => {
+    const timeAgo = formatTime(q.created_at);
+    return `
+      <div class="q-card ${q.answer_count > 0 ? 'answered':'unanswered'}" onclick="showDetail(${q.id})">
+        <div class="q-meta">
+          <span class="q-industry">${q.industry}</span>
+          <span class="q-role">${q.role}</span>
+          <span class="q-time">${timeAgo}</span>
+        </div>
+        <div class="q-title">${q.title}</div>
+        <div class="q-preview">${q.body || ''}</div>
+        <div class="q-footer">
+          <span>👁 ${Number(q.view_count||0).toLocaleString()}</span>
+          <span class="answer-count ${q.answer_count > 0 ? 'has-answers':'no-answers'}">
+            ${q.answer_count > 0 ? `✓ ${q.answer_count} 個回答` : '尚未有人回答'}
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ══════════════════════════════════════════
+//  問題詳細頁
+// ══════════════════════════════════════════
+
+async function showDetail(id) {
+  document.getElementById('list-view').style.display = 'none';
+  document.getElementById('detail-view').classList.add('open');
+  window.scrollTo(0,0);
+  document.getElementById('detail-content').innerHTML = '<div class="loading"><div class="spinner"></div>載入中...</div>';
+
+  let question, answers;
+  if (API_URL) {
+    try {
+      const data = await apiGet({ action:'getQuestion', id });
+      question = data.question;
+      answers = data.answers || [];
+    } catch(e) {
+      question = MOCK_QUESTIONS.find(q=>q.id==id);
+      answers = MOCK_ANSWERS[id] || [];
+    }
+  } else {
+    question = MOCK_QUESTIONS.find(q=>q.id==id);
+    answers = MOCK_ANSWERS[id] || [];
+    // 假裝更新瀏覽數
+    if (question) question.view_count = (Number(question.view_count)||0) + 1;
+  }
+
+  if (!question) {
+    document.getElementById('detail-content').innerHTML = '<div class="loading">找不到問題</div>';
+    return;
+  }
+
+  document.getElementById('detail-breadcrumb').textContent = `${question.industry} › ${question.role}`;
+
+  const avatarColors = ['#e8622a','#4c7aaf','#4caf82','#9c27b0','#ff5722','#607d8b'];
+
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-q">
+      <div class="q-meta">
+        <span class="q-industry">${question.industry}</span>
+        <span class="q-role">${question.role}</span>
+        <span class="q-time">${formatTime(question.created_at)}</span>
+      </div>
+      <h1>${question.title}</h1>
+      <p>${(question.body||'').replace(/\n/g,'<br>')}</p>
+      <div style="margin-top:1rem;font-size:0.78rem;color:var(--muted)">
+        👁 ${Number(question.view_count||0).toLocaleString()} 次瀏覽 · 由 ${question.nickname||'匿名'} 發問
+      </div>
+    </div>
+
+    <div class="answers-header">
+      <h2>${answers.length > 0 ? `${answers.length} 個影片回答` : '尚無回答'}</h2>
+      <span style="font-size:0.78rem;color:var(--muted)">依觀看次數排序</span>
+    </div>
+
+    ${answers.length === 0 ? `
+      <div style="background:var(--surface);border:1px dashed var(--border);border-radius:10px;padding:2rem;text-align:center;color:var(--muted);margin-bottom:1.5rem">
+        <div style="font-size:2rem;margin-bottom:0.5rem">🎥</div>
+        <div>這個問題還沒有人回答，你是第一個嗎？</div>
+      </div>
+    ` : answers.map((a, i) => {
+      const color = avatarColors[i % avatarColors.length];
+      const firstChar = a.answerer_name ? a.answerer_name[0] : '?';
+      return `
+        <div class="answer-card ${a.is_best == true || a.is_best === 'true' ? 'best-answer':''}">
+          ${a.is_best == true || a.is_best === 'true' ? '<div class="best-badge">⭐ 最佳回答</div>' : ''}
+          <div class="answer-author">
+            <div class="avatar" style="background:${color}20;color:${color}">${firstChar}</div>
+            <div class="author-info">
+              <div class="name">${a.answerer_name}</div>
+              <div class="title">${a.answerer_title||''}</div>
+            </div>
+            <span style="margin-left:auto;font-size:0.75rem;color:var(--muted)">${formatTime(a.created_at)}</span>
+          </div>
+          <div class="yt-embed" onclick="window.open('https://youtube.com/watch?v=${a.youtube_video_id}','_blank')">
+            <img src="https://img.youtube.com/vi/${a.youtube_video_id}/maxresdefault.jpg" alt="影片縮圖" onerror="this.style.display='none'">
+            <div class="yt-play">
+              <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+          <div class="answer-stats">
+            <span style="font-weight:500;color:var(--ink2)">▶ ${Number(a.yt_view_count||0).toLocaleString()} 次觀看</span>
+            <a href="https://youtube.com/watch?v=${a.youtube_video_id}" target="_blank" style="margin-left:auto;color:var(--accent);text-decoration:none;font-size:0.78rem">YouTube 原址 →</a>
+          </div>
+        </div>
+      `;
+    }).join('')}
+
+    <div class="post-answer-box">
+      <h3>🎥 你也可以回答這個問題</h3>
+      <p style="font-size:0.83rem;color:var(--muted);margin-bottom:0.9rem">先把影片上傳到 YouTube，再把連結貼到這裡</p>
+      <div class="form-group">
+        <label>你的名稱</label>
+        <input type="text" id="inline-name" placeholder="例如：10年電子業老鳥">
+      </div>
+      <div class="form-group">
+        <label>職位／頭銜</label>
+        <input type="text" id="inline-title" placeholder="例如：資深硬體工程師">
+      </div>
+      <div class="yt-input-row">
+        <input type="url" id="inline-yt-url" placeholder="https://www.youtube.com/watch?v=...">
+        <button class="btn btn-primary" onclick="submitInlineAnswer(${id})">提交</button>
+      </div>
+    </div>
+  `;
+}
+
+async function submitInlineAnswer(questionId) {
+  const url = document.getElementById('inline-yt-url').value;
+  const name = document.getElementById('inline-name').value;
+  const title = document.getElementById('inline-title').value;
+  if (!url) { showToast('❌ 請填入 YouTube 連結'); return; }
+
+  await apiPost({ action:'postAnswer', question_id: questionId, youtube_url: url, answerer_name: name, answerer_title: title });
+  showToast('✅ 影片已提交，審核後將顯示！');
+  document.getElementById('inline-yt-url').value = '';
+}
+
+// ══════════════════════════════════════════
+//  發問 & 回答
+// ══════════════════════════════════════════
+
+async function submitQuestion() {
+  const title = document.getElementById('ask-title').value;
+  if (!title) { showToast('❌ 請填寫問題標題'); return; }
+
+  await apiPost({
+    action: 'postQuestion',
+    industry: document.getElementById('ask-industry').value,
+    role: document.getElementById('ask-role').value,
+    title,
+    body: document.getElementById('ask-body').value,
+    nickname: document.getElementById('ask-nickname').value || '匿名',
+  });
+
+  closeModal('ask-modal');
+  showToast('✅ 問題已送出，審核後將顯示！');
+  document.getElementById('ask-title').value = '';
+  document.getElementById('ask-body').value = '';
+}
+
+async function submitAnswer() {
+  const url = document.getElementById('answer-url').value;
+  if (!url) { showToast('❌ 請填入 YouTube 連結'); return; }
+
+  await apiPost({
+    action: 'postAnswer',
+    question_id: document.getElementById('answer-qid').value,
+    youtube_url: url,
+    answerer_name: document.getElementById('answer-name').value,
+    answerer_title: document.getElementById('answer-title-input').value,
+  });
+
+  closeModal('answer-modal');
+  showToast('✅ 影片已提交，審核後將顯示！');
+}
+
+// ══════════════════════════════════════════
+//  UI 工具
+// ══════════════════════════════════════════
+
+function filterTag(el, val) {
+  document.querySelectorAll('.filter-bar .tag').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = val;
+  loadQuestions();
+}
+
+function sortBy(el, val) {
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  currentSort = val;
+  loadQuestions();
+}
+
+function showList() {
+  document.getElementById('list-view').style.display = 'block';
+  document.getElementById('detail-view').classList.remove('open');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModalOutside(e, id) { if (e.target.id === id) closeModal(id); }
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function saveApiUrl() {
+  const url = document.getElementById('api-url-input').value.trim();
+  if (!url) return;
+  API_URL = url;
+  localStorage.setItem('zhiwen_api_url', url);
+  document.getElementById('config-banner').style.display = 'none';
+  showToast('✅ API 已連線，重新載入資料...');
+  loadQuestions();
+}
+
+function formatTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  const diff = (Date.now() - d) / 1000;
+  if (diff < 3600) return `${Math.floor(diff/60)} 分鐘前`;
+  if (diff < 86400) return `${Math.floor(diff/3600)} 小時前`;
+  if (diff < 604800) return `${Math.floor(diff/86400)} 天前`;
+  return `${d.getMonth()+1}/${d.getDate()}`;
+}
+
+// ── 初始化 ──
+if (API_URL) document.getElementById('config-banner').style.display = 'none';
+loadQuestions();
+</script>
+</body>
+</html>
